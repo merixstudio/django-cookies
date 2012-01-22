@@ -44,7 +44,7 @@ class CookieMiddleware(object):
  
 class StringMorsel(Morsel):
     def __str__(self):
-        return self.value
+        return self.value or ''
  
     def __eq__(self, a):
         if isinstance(a, str):
@@ -62,6 +62,22 @@ class StringMorsel(Morsel):
  
     def __repr__(self):
         return str(self)
+
+    def __len__(self):
+        return len(str(self))
+
+    def __nonzero__(self):
+        return bool(str(self))
+
+    def __contains__(self, obj):
+        return obj in str(self)
+
+    def __getattr__(self, name):
+        try:
+            return getattr(str(self), name)
+        except AttributeError:
+            msg = "%r object has no attribute '%s'"
+            raise AttributeError(msg % (self.__class__.__name__, name))
  
 class CookieHandler(SimpleCookie):
     def __set(self, key, real_value, coded_value):
